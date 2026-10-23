@@ -1,0 +1,30 @@
+
+name: DAST Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  dast_scan:
+    name: OWASP ZAP Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Start Web Server
+        run: |
+          python3 -m http.server 8000 &
+          sleep 3
+
+      - name: Run ZAP Scan
+        uses: zaproxy/action-baseline@v0.13.0
+        with:
+          target: 'http://127.0.0.1:8000'
+          fail_action: false
